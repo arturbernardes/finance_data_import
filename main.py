@@ -1,10 +1,19 @@
-import requests
-from bs4 import BeautifulSoup
-
-from datetime import datetime
 from ticker_carteira import *
 
-#import Threading           #TODO fazer multithreading
+from datetime import datetime
+from bs4 import BeautifulSoup
+
+import threading
+import requests
+
+
+INFO_ACOES = []
+INFO_FIIS = []
+THREADS_LIST = []
+
+
+
+
 
 def requisicao_e_parsing(URL):
     try:
@@ -19,21 +28,50 @@ def requisicao_e_parsing(URL):
         print('Erro de Requisição')
         print(error)
 
-def busca_dy_acoes(soup, ticker, mostrar_dado = None):
-    try:
-        dado = soup.find('div', class_='info w-50 w-md-50 w-lg-20')
-        if dado:
-            dy = dado.find('strong', class_='value').get_text()
-            if mostrar_dado == 1:
-                print(ticker, ' - DY: ', dy)
-            return dy
-    except Exception as error:
-        print('Erro ao buscar dado!')
-        print(error)
 
-def salvar_dados(dados):
+
+def busca_dy_acoes():
+    while True:
+        try:
+            ticker = ticker_acao.pop(0)
+        except Exception as error:
+            break
+
+        try:
+            soup = requisicao_e_parsing(URL_ACOES + ticker)
+            dado = soup.find('div', class_='info w-50 w-md-50 w-lg-20')
+            if dado:
+                dy = dado.find('strong', class_='value').get_text()
+                print(ticker + ' - DY: ' + dy)
+                INFO_ACOES.append(ticker + ';' + dy + '\n')
+        except Exception as error:
+            print('Erro ao buscar dado!')
+            print(error)
+
+
+def busca_dy_FIIS():
+    while True:
+        try:
+            ticker = ticker_fii.pop(0)
+        except Exception as error:
+            return
+
+        try:
+            soup = requisicao_e_parsing(URL_FIIS + ticker)
+            dado = soup.find('div', class_='info w-50 w-lg-20')
+            if dado:
+                dy = dado.find('strong', class_='value').get_text()
+                print(ticker + ' - DY: ' + dy)
+                INFO_FIIS.append(ticker + ';' + dy + '\n')
+        except Exception as error:
+            print('Erro ao buscar dado!')
+            print(error)
+
+
+
+def salvar_dados(dados, tipo_dado):
     try:
-        with open('dados_financeiros_python.csv', 'w') as csvfile:
+        with open('dados_'+tipo_dado+'.csv', 'w') as csvfile:
             csvfile.write('Data da busca:'+datetime.today().strftime('%d-%m-%y')+'\n' +
                           'Ticker' + ';' + 'DY' + '\n')
             for dado in dados:
@@ -44,14 +82,21 @@ def salvar_dados(dados):
 
 
 if __name__ == '__main__':
-    info = []
-    for ticker in ticker_acao:
-        busca_codigo = requisicao_e_parsing(URL_ACOES+ticker)
-        busca_dy = busca_dy_acoes(busca_codigo, ticker, 1)
+    quantidade_thread = 10
+    print('Buscando DY')
+    for i in range(quantidade_thread):
+        t = threading.Thread(target=busca_dy_acoes)
+        j = threading.Thread(target=busca_dy_FIIS)
+        THREADS_LIST.append(t)
+        THREADS_LIST.append(j)
 
-        info.append(ticker + ';' + busca_dy + '\n')
+    for t in THREADS_LIST:
+        t.start()
 
-    salvar_dados(info)
-    print('Fim da busca')
+    for t in THREADS_LIST:
+        t.join()
 
+    print('Salvando dados')
+    salvar_dados(INFO_ACOES, 'acoes')
+    salvar_dados(INFO_FIIS, 'FIIs')
 
