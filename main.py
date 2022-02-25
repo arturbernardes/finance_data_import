@@ -42,7 +42,6 @@ def busca_dy_acoes():
             dado = soup.find('div', class_='info w-50 w-md-50 w-lg-20')
             if dado:
                 dy = dado.find('strong', class_='value').get_text()
-                print(ticker + ' - DY: ' + dy)
                 INFO_ACOES.append(ticker + ';' + dy + '\n')
         except Exception as error:
             print('Erro ao buscar dado!')
@@ -61,7 +60,6 @@ def busca_dy_FIIS():
             dado = soup.find('div', class_='info w-50 w-lg-20')
             if dado:
                 dy = dado.find('strong', class_='value').get_text()
-                print(ticker + ' - DY: ' + dy)
                 INFO_FIIS.append(ticker + ';' + dy + '\n')
         except Exception as error:
             print('Erro ao buscar dado!')
