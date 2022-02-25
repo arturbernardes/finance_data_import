@@ -35,7 +35,7 @@ def salvar_dados(dados):
     try:
         with open('dados_financeiros_python.csv', 'w') as csvfile:
             csvfile.write('Data da busca:'+datetime.today().strftime('%d-%m-%y')+'\n' +
-                          'Ticker' + ':' + 'DY' + '\n')
+                          'Ticker' + ';' + 'DY' + '\n')
             for dado in dados:
                 csvfile.write(dado)
     except Exception as error:
@@ -52,7 +52,6 @@ if __name__ == '__main__':
         info.append(ticker + ';' + busca_dy + '\n')
 
     salvar_dados(info)
-    print(datetime.today())
     print('Fim da busca')
 
 
