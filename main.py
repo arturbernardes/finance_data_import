@@ -1,4 +1,4 @@
-from ticker_carteira import *
+from ticker_pessoal import *
 
 from datetime import datetime
 from bs4 import BeautifulSoup
@@ -10,9 +10,6 @@ import requests
 INFO_ACOES = []
 INFO_FIIS = []
 THREADS_LIST = []
-
-
-
 
 
 def requisicao_e_parsing(URL):
@@ -27,7 +24,6 @@ def requisicao_e_parsing(URL):
     except Exception as error:
         print('Erro de Requisição')
         print(error)
-
 
 
 def busca_dy_acoes():
@@ -64,7 +60,6 @@ def busca_dy_FIIS():
         except Exception as error:
             print('Erro ao buscar dado!')
             print(error)
-
 
 
 def salvar_dados(dados, tipo_dado):
