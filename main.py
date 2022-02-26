@@ -65,8 +65,7 @@ def busca_dy_FIIS():
 def salvar_dados(dados, tipo_dado):
     try:
         with open('dados_'+tipo_dado+'.csv', 'w') as csvfile:
-            csvfile.write('Data da busca:'+datetime.today().strftime('%d-%m-%y')+'\n' +
-                          'Ticker' + ';' + 'DY' + '\n')
+            csvfile.write('Ticker' + ';' + 'DY' + '\n')
             for dado in dados:
                 csvfile.write(dado)
     except Exception as error:
